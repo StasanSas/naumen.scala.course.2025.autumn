@@ -99,11 +99,12 @@ object Exercises {
 
     def sortByHeavyweight(ballsArray: Map[String, (Int, Double)] = balls): Seq[String] = {
         val pi = java.lang.Math.PI
-        val dataBallsInTup = ballsArray.keys.map { ballName =>
+        val dataForSort = ballsArray.keys.map { ballName =>
             val dataBall = (ballsArray get ballName).get
-            (ballName, dataBall._1, dataBall._2)
+            val radius = dataBall._1
+            val density = dataBall._2
+            (ballName, (4 * pi / 3) * pow(radius, 3) * density)
         }
-        val dataForSort = dataBallsInTup.map(tup => (tup._1, (4 * pi / 3) * pow(tup._2, 3) * tup._3))
         dataForSort.toList.sortBy(t => t._2).map(t => t._1)
     }
 
