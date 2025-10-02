@@ -9,7 +9,7 @@ class Table(val width: Int, val height : Int) {
      if (isNotInBorders) {
        None
      } else {
-       data.get((ix, iy)).orElse(Some(EmptyCell))
+       data.get((ix, iy)).orElse(Some(new EmptyCell))
      }
    }
 
