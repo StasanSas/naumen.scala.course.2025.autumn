@@ -17,30 +17,25 @@ case class NumberCell(value : Int) extends Cell{
 }
 
 case class ReferenceCell(ix: Int, iy: Int, table: Table) extends Cell{
-  override def toString() : String = getValueRefCell(Queue.empty[(Int, Int, Table)], ix, iy, table)
+  override def toString() : String = getValueRefCell(List.empty[ReferenceCell], this)
 
-  def getValueRefCell(way : Queue[(Int, Int, Table)], ix: Int, iy: Int, table: Table): String = {
-    val valueFromTable = table.getCell(ix, iy)
-    (way.isEmpty, valueFromTable) match {
-      case (_, None) => "outOfRange"
-      case (true, Some(v)) => {
-        val newWay = way.enqueue((ix, iy, table))
-        getValueCell(v, newWay)
-      }
-      case (false, Some(v)) => {
-        val (headX, headY, headTable) = way.head
-        if (headX == ix && headY == iy && (headTable eq table)) {
+  def getValueRefCell(way : List[ReferenceCell], cell: ReferenceCell): String = {
+    val valueFromTable = cell.table.getCell(cell.ix, cell.iy)
+    valueFromTable match {
+      case None => "outOfRange"
+      case Some(v) => {
+        if (way.contains(cell)) {
           "cyclic"
-        } else{
-          val newWay = way.enqueue((ix, iy, table))
-          getValueCell(v, newWay)
+        } else {
+          val newWay = cell :: way
+          getValueCell(newWay, v)
         }
       }
     }
   }
 
-  def getValueCell(cell : Cell, way : Queue[(Int, Int, Table)]): String =  cell match {
-    case ReferenceCell(x, y, table) => getValueRefCell(way, x, y, table)
+  def getValueCell(way : List[ReferenceCell], cell : Cell): String =  cell match {
+    case ceil : ReferenceCell  => getValueRefCell(way, ceil)
     case cell => cell.toString
   }
 
